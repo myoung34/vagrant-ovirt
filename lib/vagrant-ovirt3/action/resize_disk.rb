@@ -16,7 +16,7 @@ module VagrantPlugins
         def call(env)
           # Is it necessary to resize the disk?
           config = env[:machine].provider_config
-          if config.disk_size.nil?
+          if config.disk_size.nil? || config.disk_size.is_a?(Vagrant::Config::V2::DummyConfig)
             # Nothing to do
             @app.call(env)
             return
