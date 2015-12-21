@@ -20,7 +20,7 @@ module VagrantPlugins
           name = config.name.nil? ? env[:domain_name] : config.name
           console = config.console
           cpus = config.cpus
-          memory_size = config.memory*1024
+          memory_size = config.memory
           user_data = config.user_data ?
             Base64::encode64(config.user_data) :
             nil
@@ -60,8 +60,12 @@ module VagrantPlugins
           # Output the settings we're going to use to the user
           env[:ui].info(I18n.t("vagrant_ovirt3.creating_vm"))
           env[:ui].info(" -- Name:          #{name}")
-          env[:ui].info(" -- Cpus:          #{cpus}")
-          env[:ui].info(" -- Memory:        #{memory_size/1024}M")
+          if cpus != Vagrant::Plugin::V2::Config::UNSET_VALUE
+            env[:ui].info(" -- Cpus:          #{cpus}")
+          end
+          if memory_size != Vagrant::Plugin::V2::Config::UNSET_VALUE
+            env[:ui].info(" -- Memory:        #{memory_size}")
+          end
           env[:ui].info(" -- Template:      #{template.name}")
           env[:ui].info(" -- Version:       #{version_string}")
           env[:ui].info(" -- Datacenter:    #{config.datacenter}")
@@ -77,13 +81,18 @@ module VagrantPlugins
           # Create oVirt VM.
           attr = {
               :name     => name,
-              :cores    => cpus,
-              :memory   => memory_size*1024,
               :cluster  => cluster.id,
               :template => template.id,
               :display  => {:type => console },
               :user_data => user_data,
           }
+
+          if cpus != Vagrant::Plugin::V2::Config::UNSET_VALUE
+              attr[:cores] = cpus
+          end
+          if memory_size != Vagrant::Plugin::V2::Config::UNSET_VALUE
+              attr[:memory] = memory_size*1024*1024
+          end
 
           begin
             server = env[:ovirt_compute].servers.create(attr)

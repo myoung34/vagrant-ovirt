@@ -58,8 +58,8 @@ module VagrantPlugins
         @filtered_api = false if @filtered_api == UNSET_VALUE
 
         # Domain specific settings.
-        @memory = 512 if @memory == UNSET_VALUE
-        @cpus = 1 if @cpus == UNSET_VALUE
+        #@memory = 512 if @memory == UNSET_VALUE
+        #@cpus = 1 if @cpus == UNSET_VALUE
         @template = 'Blank' if @template == UNSET_VALUE
         @template_version = nil if @template_version == UNSET_VALUE
         @console = 'spice' if @console == UNSET_VALUE
