@@ -107,7 +107,6 @@ module VagrantPlugins
                end
              end
              if server.status != 'down'
-               env[:ui].info(server.status)
                ready = false
              end
              break if ready
