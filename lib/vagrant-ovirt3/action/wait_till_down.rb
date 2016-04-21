@@ -6,22 +6,21 @@ module VagrantPlugins
   module OVirtProvider
     module Action
 
-      # Wait till VM is started, till it obtains an IP address and is
-      # accessible via ssh.
+      # Wait till VM is stopped
       class WaitTillDown
         include Vagrant::Util::Retryable
 
         def initialize(app, env)
-          @logger = Log4r::Logger.new("vagrant_ovirt3::action::wait_till_up")
+          @logger = Log4r::Logger.new("vagrant_ovirt3::action::wait_till_down")
           @app = app
         end
 
         def call(env)
 
+          env[:ui].info(I18n.t("vagrant_ovirt3.wait_till_down"))
           for i in 0..20
             ready = true
             server = env[:ovirt_compute].servers.get(env[:machine].id.to_s)
-            env[:ui].info(server.status)
             if server.status != 'down'
               ready = false
             end
@@ -30,7 +29,7 @@ module VagrantPlugins
           end
 
           if not ready
-            raise Errors::WaitForReadyVmTimeout
+            raise Errors::WaitForShutdownVmTimeout
           end
 
           
