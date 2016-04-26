@@ -107,17 +107,20 @@ module VagrantPlugins
 
           # Wait till all volumes are ready.
           env[:ui].info(I18n.t("vagrant_ovirt3.wait_for_ready_vm"))
-          for i in 0..10
-            ready = true
-            server = env[:ovirt_compute].servers.get(env[:machine].id.to_s)
-            server.volumes.each do |volume|
-              if volume.status != 'ok'
-                ready = false
-                break
-              end
-            end
-            break if ready
-            sleep 2
+          for i in 0..20
+             ready = true
+             server = env[:ovirt_compute].servers.get(env[:machine].id.to_s)
+             server.volumes.each do |volume|
+               if volume.status != 'ok'
+                 ready = false
+                 break
+               end
+             end
+             if server.status != 'down'
+               ready = false
+             end
+             break if ready
+             sleep 2
           end
 
           if not ready
