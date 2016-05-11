@@ -21,9 +21,18 @@ module VagrantPlugins
               :vm_name => env[:machine].id.to_s
           end
 
+          status = ""
+          for i in 1..60
+            status = env[:ovirt_compute].servers.get(env[:machine].id.to_s).status
+            break if status == "down" or status == "up"
+            sleep 2
+          end
+
           # Start VM.
           begin
-            machine.start
+            if status == "down"
+              machine.start
+            end
           rescue OVIRT::OvirtException => e
             raise Errors::StartVMError,
               :error_message => e.message
